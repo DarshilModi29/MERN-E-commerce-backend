@@ -183,6 +183,26 @@ router.get("/getCartDetails", async (req, res) => {
         let data = await productdetailsModel.aggregate([
             {
                 $match: { "_id": { $in: ids } }
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    foreignField: "_id",
+                    localField: "product_id",
+                    as: "productData"
+                }
+            },
+            {
+                $project: {
+                    "productData._id": 0,
+                    "productData.__v": 0,
+                    "productData.thumbnail": 0,
+                    "productData.desc": 0,
+                    "productData.catName": 0,
+                    "productData.brandName": 0,
+                    "productData.subCatName": 0,
+                    "productData.smallDesc": 0,
+                }
             }
         ]);
         res.json({ "data": data })
